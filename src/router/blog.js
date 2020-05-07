@@ -1,11 +1,5 @@
- const { 
-     getList, 
-     getDeatail, 
-     newBlog,
-     updateBlog,
-     delBlog
-    } = require('../controller/blog')
- const  { SuccessModel, ErrorModel } = require('../model/resModel')
+const { getList, getDetail, newBlog, updateBlog, delBlog } = require("../controller/blog");
+const { SuccessModel, ErrorModel } = require("../model/resModel");
 
  // 统一的登录验证函数
  const loginCheck = (req) => {
@@ -16,46 +10,33 @@
     }
     
  }
- 
- const handleBlogRouter = (req, res) => {
-    const method = req.method
+
+const handleBlogRouter = (req, res) => {
+    const method = req.method;
+    const url = req.url;
     const id = req.query.id
+    const path = req.url.split('?')[0];
 
-    // 获取博客列表
-    if (method === 'GET' && req.path  === '/api/blog/list') {
-        let author = req.query.author || ''
-        const keyword = req.query.keyword || ''
-        // const listData = getList(author, keyword)
-        // return new SuccessModel(listData)
-
-        if (req.query.isadmin) {
-            // 管理员界面
-            const loginCheckResult = loginCheck(req)
-            if (loginCheckResult) {
-                // 未登录
-                return loginCheckResult
-            }
-            // 强制查询自己的博客
-            author = req.session.username
-        }
-
-        const result = getList(author, keyword)
-        return  result.then(listData => {
-            return new SuccessModel(listData)
+    if (method === "GET" && path === "/api/blog/list") {
+        const author = req.query.author || '';
+        const keyword = req.query.keyword || '';
+        const result = getList(author, keyword);
+        return result.then((listdata) => {
+            console.log("listdata:", listdata);
+            return new SuccessModel(listdata);
         })
     }
-
-    // 获取博客详情
-    if (method === 'GET' && req.path === '/api/blog/detail') {
-        // const data = getDeatail(id)
-        // return new SuccessModel(data)
-        const result = getDeatail(id)
-        return result.then(data => {
-            return new SuccessModel(data)
+    if (method === "GET" && path === "/api/blog/detail") {
+        const id = req.query.id || '';
+        const result = getDetail(id);
+        return result.then((detailData) => {
+            console.log("detailData:", detailData);
+            return new SuccessModel(detailData);
         })
-    }
 
-    // 新建一篇博客
+
+        return new SuccessModel(detailData);
+    }
     if (method === 'POST' && req.path === '/api/blog/new') {
         // const data = newBlog(req.body)
         // return new SuccessModel(data)
@@ -72,7 +53,6 @@
             return new SuccessModel(data)
         })
     }
-
     // 更新一篇博客
     if (method === 'POST' && req.path === '/api/blog/update') {
         const loginCheckResult = loginCheck(req)
@@ -109,6 +89,6 @@
             }
         })
     }
- }
+}
 
- module.exports = handleBlogRouter
+module.exports = handleBlogRouter;

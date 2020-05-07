@@ -1,46 +1,36 @@
-const { exec } = require('../db/mysql')
+const { exec } = require('../db/mysql');
 
 const getList = (author, keyword) => {
-    let sql = `select * from blogs where 1=1 `
-    if (author) {
-        sql += `and author='${author}' `
-    }
-    if (keyword) {
-        sql += `and title like '%${keyword}%' `
-    }
-    sql += `order by createtime desc;`
-
-    // 返回 promise
-    return exec(sql)
+	let sql = `select * from blogs where 1=1 `;
+	if (author) {
+		sql = sql + `and author='${author}' `;
+	}
+	if (keyword) {
+		sql += `and title like '%${keyword}%'`;
+	}
+	// 返回promise
+	return exec(sql);
 }
 
-const getDeatail = (id) => {
-    const sql = `select * from blogs where id='${id}'`
-    return exec(sql).then(rows => {
-        return rows[0]
-    })
+const getDetail = (id) => {
+
+	let sql = `select * from blogs where id='${id}'`;
+	return exec(sql).then((row) => {
+		return row[0];
+	});
 }
 
 const newBlog = (blogData = {}) => {
-    // blogData 是一个博客对象，包含title content author 属性
-    const title = blogData.title
-    const content = blogData.content
-    const author = blogData.author
-    const createTime = Date.now()
-
-    const sql = `
-        insert into blogs (title, content, createtime, author)
-        values ('${title}', '${content}', ${createTime}, '${author}');
-    `
-
-    return exec(sql).then(insertData => {
-        // console.log('insertData is ', insertData)
-        return {
-            id: insertData.insertId
-        }
+	const { title, content, author } = blogData;
+	const createtime = Date.now();
+	const sql = `insert into blogs(title,content,createtime,author)values("${title}","${content}",${createtime},"${author}")`;
+	return exec(sql).then((insertData) => {
+		console.log("insertData:", insertData);
+		return {
+			id: insertData.insertId
+		}
     })
 }
-
 const updateBlog = (id, blogData = {}) => {
     // id 就是要更新博客的id
     // blogData 是一个博客对象，包含title content 属性
@@ -74,9 +64,9 @@ const delBlog = (id, author) => {
 }
 
 module.exports = {
-    getList,
-    getDeatail,
+	getList,
+	getDetail,
     newBlog,
     updateBlog,
-    delBlog
-}
+    delBlog,
+};
